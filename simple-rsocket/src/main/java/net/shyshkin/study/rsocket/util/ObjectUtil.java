@@ -1,35 +1,24 @@
 package net.shyshkin.study.rsocket.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.rsocket.Payload;
 import io.rsocket.util.DefaultPayload;
-
-import java.io.IOException;
+import lombok.SneakyThrows;
 
 public class ObjectUtil {
 
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
+    @SneakyThrows
     public static Payload toPayload(Object o) {
-
-        try {
-            byte[] bytes = objectMapper.writeValueAsBytes(o);
-            return DefaultPayload.create(bytes);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        byte[] bytes = objectMapper.writeValueAsBytes(o);
+        return DefaultPayload.create(bytes);
     }
 
+    @SneakyThrows
     public static <T> T toObject(Payload payload, Class<T> clazz) {
-
         byte[] bytes = payload.data().array();
-
-        try {
-            return objectMapper.readValue(bytes, clazz);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return objectMapper.readValue(bytes, clazz);
     }
 
 }

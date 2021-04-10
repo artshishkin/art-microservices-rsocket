@@ -8,6 +8,7 @@ import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.server.CloseableChannel;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import net.shyshkin.study.rsocket.dto.RequestDto;
+import net.shyshkin.study.rsocket.dto.ResponseDto;
 import net.shyshkin.study.rsocket.service.SocketAcceptorImpl;
 import net.shyshkin.study.rsocket.util.ObjectUtil;
 import org.junit.jupiter.api.AfterAll;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class Lec01RSocketAutoTest {
 
@@ -50,5 +53,24 @@ class Lec01RSocketAutoTest {
                 .verifyComplete();
 
         Thread.sleep(100);
+    }
+
+    @Test
+    void requestResponse() {
+        //given
+        int input = 12;
+        Payload payload = ObjectUtil.toPayload(RequestDto.builder().input(input).build());
+
+        //when
+        Mono<Payload> requestResponse = rSocket.requestResponse(payload);
+
+        //then
+        StepVerifier.create(requestResponse)
+                .assertNext(responsePayload ->
+                        assertEquals(
+                                ObjectUtil.toObject(responsePayload, ResponseDto.class).getOutput(),
+                                input * input)
+                )
+                .verifyComplete();
     }
 }

@@ -4,7 +4,8 @@ import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import io.rsocket.core.RSocketConnector;
 import io.rsocket.transport.netty.client.TcpClientTransport;
-import io.rsocket.util.DefaultPayload;
+import net.shyshkin.study.rsocket.dto.RequestDto;
+import net.shyshkin.study.rsocket.util.ObjectUtil;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,7 @@ class Lec01RSocketManualTest {
     @Test
     void fireAndForget() {
         //given
-        Payload payload = DefaultPayload.create("Hello World!");
+        Payload payload = ObjectUtil.toPayload(RequestDto.builder().input(123).build());
 
         //when
         Mono<Void> fireAndForget = rSocket.fireAndForget(payload);

@@ -7,8 +7,9 @@ import io.rsocket.core.RSocketServer;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.server.CloseableChannel;
 import io.rsocket.transport.netty.server.TcpServerTransport;
-import io.rsocket.util.DefaultPayload;
+import net.shyshkin.study.rsocket.dto.RequestDto;
 import net.shyshkin.study.rsocket.service.SocketAcceptorImpl;
+import net.shyshkin.study.rsocket.util.ObjectUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,9 +38,9 @@ class Lec01RSocketAutoTest {
     }
 
     @Test
-    void fireAndForget() {
+    void fireAndForget() throws InterruptedException {
         //given
-        Payload payload = DefaultPayload.create("Hello World!");
+        Payload payload = ObjectUtil.toPayload(RequestDto.builder().input(123).build());
 
         //when
         Mono<Void> fireAndForget = rSocket.fireAndForget(payload);
@@ -48,5 +49,6 @@ class Lec01RSocketAutoTest {
         StepVerifier.create(fireAndForget)
                 .verifyComplete();
 
+        Thread.sleep(100);
     }
 }

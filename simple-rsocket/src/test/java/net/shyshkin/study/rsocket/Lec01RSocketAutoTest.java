@@ -14,6 +14,7 @@ import net.shyshkin.study.rsocket.util.ObjectUtil;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -68,9 +69,56 @@ class Lec01RSocketAutoTest {
         StepVerifier.create(requestResponse)
                 .assertNext(responsePayload ->
                         assertEquals(
-                                ObjectUtil.toObject(responsePayload, ResponseDto.class).getOutput(),
-                                input * input)
+                                input * input,
+                                ObjectUtil.toObject(responsePayload, ResponseDto.class).getOutput()
+                        )
                 )
+                .verifyComplete();
+    }
+
+    @Test
+    void requestStream() {
+        //given
+        int input = 8;
+        Payload payload = ObjectUtil.toPayload(RequestDto.builder().input(input).build());
+
+        //when
+        Flux<Payload> requestResponse = rSocket.requestStream(payload);
+
+        //then
+        Flux<ResponseDto> dtoFlux = requestResponse
+                .map(p -> ObjectUtil.toObject(p, ResponseDto.class))
+                .doOnNext(System.out::println);
+
+        StepVerifier.create(dtoFlux)
+                .assertNext(dto ->
+                        assertEquals(input * 1, dto.getOutput())
+                )
+                .assertNext(dto ->
+                        assertEquals(input * 2, dto.getOutput())
+                )
+                .expectNextCount(7)
+                .expectNext(ResponseDto.builder().input(input).output(10 * input).build())
+                .verifyComplete();
+    }
+
+    @Test
+    void requestStream_take4() {
+        //given
+        int input = 8;
+        Payload payload = ObjectUtil.toPayload(RequestDto.builder().input(input).build());
+
+        //when
+        Flux<Payload> requestResponse = rSocket.requestStream(payload);
+
+        //then
+        Flux<ResponseDto> dtoFlux = requestResponse
+                .map(p -> ObjectUtil.toObject(p, ResponseDto.class))
+                .doOnNext(dto -> System.out.println("client: " + dto))
+                .take(4);
+
+        StepVerifier.create(dtoFlux)
+                .expectNextCount(4)
                 .verifyComplete();
     }
 }

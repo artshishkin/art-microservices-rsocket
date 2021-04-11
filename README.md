@@ -19,3 +19,11 @@ Problems
 4.  Blocking Thread
     -  service A calls service B - thread is blocked 
 
+####  Section 3: RSocket - Getting Started
+
+#####  26. Persistent Connection Issue
+
+-  Start Server
+-  Start Test
+-  During 15s pause restart server - simulating server update/restart
+-  Will receive `java.nio.channels.ClosedChannelException`

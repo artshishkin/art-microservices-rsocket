@@ -3,6 +3,7 @@ package net.shyshkin.study.rsocket.service;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.study.rsocket.dto.RequestDto;
 import net.shyshkin.study.rsocket.dto.ResponseDto;
 import net.shyshkin.study.rsocket.util.ObjectUtil;
@@ -10,7 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-
+@Slf4j
 @RequiredArgsConstructor
 public class BatchJobService implements RSocket {
 
@@ -21,7 +22,7 @@ public class BatchJobService implements RSocket {
         RequestDto requestDto = ObjectUtil.toObject(payload, RequestDto.class);
         Mono
                 .just(requestDto)
-                .doOnNext(dto -> System.out.println("server: received " + dto))
+                .doOnNext(dto -> log.debug("server: received {}", dto))
                 .delayElement(Duration.ofMillis(1000))
                 .flatMap(this::findCube)
                 .subscribe();
@@ -34,7 +35,7 @@ public class BatchJobService implements RSocket {
         int input = requestDto.getInput();
         int cube = input * input * input;
         ResponseDto responseDto = ResponseDto.builder().input(input).output(cube).build();
-        System.out.println("Server: emitting " + responseDto);
+        log.debug("server: emitting {}", responseDto);
 
         return clientRSocket.fireAndForget(ObjectUtil.toPayload(responseDto));
     }

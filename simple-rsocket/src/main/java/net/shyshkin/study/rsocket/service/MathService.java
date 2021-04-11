@@ -2,9 +2,11 @@ package net.shyshkin.study.rsocket.service;
 
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
+import net.shyshkin.study.rsocket.dto.ChartResponseDto;
 import net.shyshkin.study.rsocket.dto.RequestDto;
 import net.shyshkin.study.rsocket.dto.ResponseDto;
 import net.shyshkin.study.rsocket.util.ObjectUtil;
+import org.reactivestreams.Publisher;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -63,6 +65,18 @@ public class MathService implements RSocket {
                 .delayElements(Duration.ofMillis(10))
                 .doOnNext(dto -> System.out.println("server: " + dto))
                 .doFinally(f -> System.out.println("server: " + f))
+                .map(ObjectUtil::toPayload);
+    }
+
+    @Override
+    public Flux<Payload> requestChannel(Publisher<Payload> payloads) {
+
+        return Flux.from(payloads)
+                .map(p -> ObjectUtil.toObject(p, RequestDto.class))
+                .map(RequestDto::getInput)
+                .map(i -> new ChartResponseDto(i, i * i + 1))
+                .doOnNext(System.out::println)
+                .doFinally(System.out::println)
                 .map(ObjectUtil::toPayload);
     }
 }

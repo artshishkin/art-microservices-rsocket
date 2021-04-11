@@ -1,0 +1,6 @@
+logging:
+  level:
+    net.shyhkin: debug
+spring:
+  application:
+    name: spring-rsocket

@@ -4,3 +4,6 @@ logging:
 spring:
   application:
     name: spring-rsocket
+  rsocket:
+    server:
+      port: 6565

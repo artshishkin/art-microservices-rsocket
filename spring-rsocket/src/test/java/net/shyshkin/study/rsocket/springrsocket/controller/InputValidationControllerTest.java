@@ -3,6 +3,7 @@ package net.shyshkin.study.rsocket.springrsocket.controller;
 import io.rsocket.exceptions.ApplicationErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,40 +29,182 @@ class InputValidationControllerTest {
         requester = builder.tcp("localhost", 6565);
     }
 
-    @Test
-    void doubleIt_valid() {
-        //given
-        int input = 12;
+    @Nested
+    class SimpleError {
 
-        //when
-        Mono<Integer> mono = requester.route("math.validation.double.{input}", input)
-                .retrieveMono(Integer.class)
-                .doOnNext(result -> log.debug("result: {}", result))
-                .doFinally(signal -> log.debug("{}", signal));
+        @Test
+        void doubleIt_valid() {
+            //given
+            int input = 12;
 
-        //then
-        StepVerifier.create(mono)
-                .expectNext(2 * input)
-                .verifyComplete();
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNext(2 * input)
+                    .verifyComplete();
+        }
+
+        @Test
+        void doubleIt_invalid() {
+            //given
+            int input = 42;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectErrorSatisfies(ex -> assertThat(ex)
+                            .isInstanceOf(ApplicationErrorException.class)
+                            .hasMessage("can not be > 30")
+                    )
+                    .verify();
+        }
     }
 
-    @Test
-    void doubleIt_invalid() {
-        //given
-        int input = 42;
+    @Nested
+    class EmptyReturn {
 
-        //when
-        Mono<Integer> mono = requester.route("math.validation.double.{input}", input)
-                .retrieveMono(Integer.class)
-                .doOnNext(result -> log.debug("result: {}", result))
-                .doFinally(signal -> log.debug("{}", signal));
+        @Test
+        void doubleIt_valid() {
+            //given
+            int input = 12;
 
-        //then
-        StepVerifier.create(mono)
-                .expectErrorSatisfies(ex -> assertThat(ex)
-                        .isInstanceOf(ApplicationErrorException.class)
-                        .hasMessage("can not be > 30")
-                )
-                .verify();
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNext(2 * input)
+                    .verifyComplete();
+        }
+
+        @Test
+        void doubleIt_invalid() {
+            //given
+            int input = 42;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .verifyComplete();
+        }
     }
+
+    @Nested
+    class DefaultIfEmptyReturn {
+
+        @Test
+        void doubleIt_valid() {
+            //given
+            int input = 12;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty_default.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNext(2 * input)
+                    .verifyComplete();
+        }
+
+        @Test
+        void doubleIt_invalid() {
+            //given
+            int input = 42;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty_default.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNext(Integer.MIN_VALUE)
+                    .verifyComplete();
+        }
+    }
+
+    @Nested
+    class SwitchIfEmptyError {
+
+        @Test
+        void doubleIt_valid() {
+            //given
+            int input = 12;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty_switch_error.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNext(2 * input)
+                    .verifyComplete();
+        }
+
+        @Test
+        void doubleIt_invalid() {
+            //given
+            int input = 42;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty_switch_error.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectErrorSatisfies(ex -> assertThat(ex)
+                            .isInstanceOf(ApplicationErrorException.class)
+                            .hasMessage("can not be > 30")
+                    )
+                    .verify();
+        }
+
+        @Test
+        void doubleIt_invalid_onErrorReturn() {
+            //given
+            int input = 42;
+
+            //when
+            Mono<Integer> mono = requester.route("math.validation.double_empty_switch_error.{input}", input)
+                    .retrieveMono(Integer.class)
+                    .onErrorReturn(Integer.MIN_VALUE)
+                    .doOnNext(result -> log.debug("result: {}", result))
+                    .doFinally(signal -> log.debug("{}", signal));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNext(Integer.MIN_VALUE)
+                    .verifyComplete();
+        }
+
+
+
+    }
+
 }

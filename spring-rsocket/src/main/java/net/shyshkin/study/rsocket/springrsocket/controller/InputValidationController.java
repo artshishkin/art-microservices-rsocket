@@ -16,4 +16,27 @@ public class InputValidationController {
                 Mono.error(() -> new IllegalArgumentException("can not be > 30"));
     }
 
+    @MessageMapping("double_empty.{input}")
+    public Mono<Integer> doubleItEmpty(@DestinationVariable int input) {
+        return Mono.just(input)
+                .filter(i -> i < 31)
+                .map(i -> i * 2);
+    }
+
+    @MessageMapping("double_empty_default.{input}")
+    public Mono<Integer> doubleItDefaultIfEmpty(@DestinationVariable int input) {
+        return Mono.just(input)
+                .filter(i -> i < 31)
+                .map(i -> i * 2)
+                .defaultIfEmpty(Integer.MIN_VALUE);
+    }
+
+    @MessageMapping("double_empty_switch_error.{input}")
+    public Mono<Integer> doubleItSwitchIfEmpty(@DestinationVariable int input) {
+        return Mono.just(input)
+                .filter(i -> i < 31)
+                .map(i -> i * 2)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("can not be > 30")));
+    }
+
 }

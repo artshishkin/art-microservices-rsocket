@@ -4,11 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.study.rsocket.springrsocket.dto.ClientConnectionRequest;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.annotation.ConnectMapping;
-import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-@Controller
+//@Controller
 public class ConnectionHandler {
 
     @ConnectMapping

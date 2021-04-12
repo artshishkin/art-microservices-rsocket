@@ -11,7 +11,7 @@ public class Player {
 
     private final Sinks.Many<Integer> sink = Sinks.many().unicast().onBackpressureBuffer();
     private int lower = 0;
-    private int upper = 100;
+    private int upper = 1_000_000;
     private int mid = 0;
     private int attempts = 0;
 
@@ -34,10 +34,10 @@ public class Player {
                 sink.tryEmitComplete();
                 return;
             case LESS:
-                lower = mid;
+                upper = mid;
                 break;
             case MORE:
-                upper = mid;
+                lower = mid;
                 break;
         }
 

@@ -11,8 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class GameService {
 
     public Flux<GameResponse> playGame(Flux<Integer> guessFlux) {
-        int serverNumber = ThreadLocalRandom.current().nextInt(1, 100);
-//        int serverNumber = 34;
+        int serverNumber = ThreadLocalRandom.current().nextInt(1, 1_000_000);
         log.debug("Server number is {}", serverNumber);
         return guessFlux
                 .doOnNext(i -> log.debug("server: received {}", i))
@@ -23,7 +22,7 @@ public class GameService {
     private GameResponse compare(int serverNumber, int clientNumber) {
         int compare = Integer.compare(serverNumber, clientNumber);
         return compare == 0 ? GameResponse.EQUAL :
-                compare < 0 ? GameResponse.MORE :
+                compare > 0 ? GameResponse.MORE :
                         GameResponse.LESS;
     }
 }

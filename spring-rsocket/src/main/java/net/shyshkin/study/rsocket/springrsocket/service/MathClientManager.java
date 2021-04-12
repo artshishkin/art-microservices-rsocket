@@ -1,13 +1,18 @@
 package net.shyshkin.study.rsocket.springrsocket.service;
 
 import lombok.extern.slf4j.Slf4j;
+import net.shyshkin.study.rsocket.springrsocket.dto.ComputationResponseDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import reactor.core.publisher.Flux;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
@@ -28,7 +33,26 @@ public class MathClientManager {
 
     @Scheduled(fixedRate = 1000)
     public void print() {
-        log.debug("Connected clients: {}", clients);
+        if (clients.size() > 0)
+            log.debug("Connected clients: {}", clients);
+    }
+
+    @Value("${app.notification.route}")
+    private String notificationRoute;
+
+    @Scheduled(fixedRate = 1500)
+    public void notificationSimulation() {
+        if (StringUtils.hasText(notificationRoute)) {
+            int i = ThreadLocalRandom.current().nextInt(1, 100);
+            notifyAll(notificationRoute, new ComputationResponseDto(i, i * i));
+        }
+    }
+
+    public void notifyAll(String route, Object newValue) {
+        Flux.fromIterable(clients)
+                .doOnNext(c -> log.debug("notifying {}", c))
+                .flatMap(c -> c.route(route).data(newValue).send())
+                .subscribe();
     }
 
 }

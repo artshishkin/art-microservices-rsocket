@@ -7,3 +7,7 @@ spring:
   rsocket:
     server:
       port: 6565
+app:
+  register-clients: true
+  notification:
+    route: batch.job.response

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -19,21 +20,32 @@ import java.util.concurrent.ThreadLocalRandom;
 @DisplayName("Manually start Server - SpringRsocketApplication then run test")
 @Disabled("Only for manual testing")
 //@TestPropertySource(properties = {"spring.rsocket.server.port=6564"})
-@TestPropertySource(properties = {"spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration"})
+@TestPropertySource(properties = {
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration",
+        "app.notification.route=",
+        "app.register-clients=false"
+})
 public class Lec07ConnectionManagerTest {
 
     @Autowired
     RSocketRequester.Builder builder;
 
+    @Autowired
+    RSocketMessageHandler handler;
+
     @Test
     void connectionTest() throws InterruptedException {
         //given
-        RSocketRequester requester1 = builder.tcp("localhost", 6565);
-        RSocketRequester requester2 = builder.tcp("localhost", 6565);
+        RSocketRequester requester1 = builder
+                .rsocketConnector(connector -> connector.acceptor(handler.responder()))
+                .tcp("localhost", 6565);
+        RSocketRequester requester2 = builder
+                .rsocketConnector(connector -> connector.acceptor(handler.responder()))
+                .tcp("localhost", 6565);
 
         //when
         requester1.route("math.service.print").data(new ComputationRequestDto(ThreadLocalRandom.current().nextInt(1, 100))).send().subscribe();
-        Thread.sleep(2500);
+        Thread.sleep(5000);
         requester2.route("math.service.print").data(new ComputationRequestDto(ThreadLocalRandom.current().nextInt(1, 100))).send().subscribe();
 
         //then

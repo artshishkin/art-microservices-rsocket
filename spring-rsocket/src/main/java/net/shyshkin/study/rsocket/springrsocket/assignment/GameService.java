@@ -4,13 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 @Slf4j
 @Service
 public class GameService {
 
     public Flux<GameResponse> playGame(Flux<Integer> guessFlux) {
-//        int serverNumber = ThreadLocalRandom.current().nextInt(1, 100);
-        int serverNumber = 34;
+        int serverNumber = ThreadLocalRandom.current().nextInt(1, 100);
+//        int serverNumber = 34;
         log.debug("Server number is {}", serverNumber);
         return guessFlux
                 .doOnNext(i -> log.debug("server: received {}", i))

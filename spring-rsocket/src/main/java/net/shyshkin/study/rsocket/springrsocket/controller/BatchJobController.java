@@ -17,13 +17,12 @@ public class BatchJobController {
 
     @MessageMapping("request")
     public Mono<Void> batchJob(Mono<ComputationRequestDto> requestDtoMono, RSocketRequester requester) {
-        findCube(requestDtoMono, requester);
-        return Mono.empty();
+        return findCube(requestDtoMono, requester);
     }
 
-    private void findCube(Mono<ComputationRequestDto> requestDtoMono, RSocketRequester requester) {
+    private Mono<Void> findCube(Mono<ComputationRequestDto> requestDtoMono, RSocketRequester requester) {
 
-        requestDtoMono
+        return requestDtoMono
                 .doOnNext(dto -> log.debug("server: received {}", dto))
                 .delayElement(Duration.ofSeconds(2))
                 .map(ComputationRequestDto::getInput)
@@ -32,8 +31,7 @@ public class BatchJobController {
                 .flatMap(resp -> requester
                         .route("batch.job.response")
                         .data(resp)
-                        .send())
-                .subscribe();
+                        .send());
     }
 
 }

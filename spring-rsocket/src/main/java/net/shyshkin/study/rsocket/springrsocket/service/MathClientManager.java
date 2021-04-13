@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.study.rsocket.springrsocket.dto.ComputationResponseDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
@@ -31,16 +30,10 @@ public class MathClientManager {
                 .subscribe();
     }
 
-    @Scheduled(fixedRate = 1000)
-    public void print() {
-        if (clients.size() > 0)
-            log.debug("Connected clients: {}", clients);
-    }
-
     @Value("${app.notification.route}")
     private String notificationRoute;
 
-    @Scheduled(fixedRate = 1500)
+//    @Scheduled(fixedRate = 1500)
     public void notificationSimulation() {
         if (StringUtils.hasText(notificationRoute)) {
             int i = ThreadLocalRandom.current().nextInt(1, 100);

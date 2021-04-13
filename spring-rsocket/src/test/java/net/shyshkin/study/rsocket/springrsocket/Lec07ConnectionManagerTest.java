@@ -21,9 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @Disabled("Only for manual testing")
 //@TestPropertySource(properties = {"spring.rsocket.server.port=6564"})
 @TestPropertySource(properties = {
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration",
-        "app.notification.route=",
-        "app.register-clients=false"
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration"
 })
 public class Lec07ConnectionManagerTest {
 
@@ -40,12 +38,13 @@ public class Lec07ConnectionManagerTest {
                 .rsocketConnector(connector -> connector.acceptor(handler.responder()))
                 .tcp("localhost", 6565);
         RSocketRequester requester2 = builder
+                .setupRoute("math.events.connection")
                 .rsocketConnector(connector -> connector.acceptor(handler.responder()))
                 .tcp("localhost", 6565);
 
         //when
         requester1.route("math.service.print").data(new ComputationRequestDto(ThreadLocalRandom.current().nextInt(1, 100))).send().subscribe();
-        Thread.sleep(5000);
+        Thread.sleep(2000);
         requester2.route("math.service.print").data(new ComputationRequestDto(ThreadLocalRandom.current().nextInt(1, 100))).send().subscribe();
 
         //then

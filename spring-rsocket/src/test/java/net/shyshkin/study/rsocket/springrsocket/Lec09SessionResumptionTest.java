@@ -1,5 +1,6 @@
 package net.shyshkin.study.rsocket.springrsocket;
 
+import io.rsocket.core.Resume;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.study.rsocket.springrsocket.dto.ComputationRequestDto;
 import net.shyshkin.study.rsocket.springrsocket.dto.ComputationResponseDto;
@@ -21,7 +22,7 @@ import java.time.Duration;
 @Slf4j
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Manually start Server - SpringRsocketApplication then run test")
+@DisplayName("Manually start Server (SpringRsocketApplication) and Nginx then run test, during test stop Nginx and start it again")
 @Disabled("Only for manual testing")
 //@TestPropertySource(properties = {"spring.rsocket.server.port=6564"})
 @TestPropertySource(properties = {
@@ -36,12 +37,14 @@ public class Lec09SessionResumptionTest {
     RSocketMessageHandler handler;
 
     @Test
-    void retryTest() {
+    void resumeTest() {
         //given
-        int input = 3;
+        int input = 1;
         String route = "math.service.table";
         RSocketRequester requester = builder
-                .rsocketConnector(c -> c.reconnect(retryStrategy()))
+                .rsocketConnector(c -> c
+                        .resume(resumeStrategy())
+                        .reconnect(retryStrategy()))
                 .tcp("localhost", 6566);
 
         //when
@@ -56,10 +59,17 @@ public class Lec09SessionResumptionTest {
                 .verifyComplete();
     }
 
+    private Resume resumeStrategy() {
+        return new Resume()
+                .retry(Retry
+                        .fixedDelay(1000, Duration.ofSeconds(2))
+                        .doBeforeRetry(s -> log.debug("Resume session: retries in a row {}, total {}", s.totalRetriesInARow(), s.totalRetries())));
+    }
+
     private Retry retryStrategy() {
         return Retry
                 .fixedDelay(100, Duration.ofSeconds(1))
-                .doBeforeRetry(r -> log.debug("Retrying connection: reties in a row {}, total {}", r.totalRetriesInARow(), r.totalRetries()));
+                .doBeforeRetry(r -> log.debug("Retrying connection: retries in a row {}, total {}", r.totalRetriesInARow(), r.totalRetries()));
     }
 }
 

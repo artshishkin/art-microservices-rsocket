@@ -38,5 +38,25 @@ Problems
 
 Retry works only for new requests. For broken streams it does not work.
 
+####  Section 7: Connection/Load Balancing
 
+#####  66. Running Multiple Instances
 
+1.  Vinoth approach
+    -  package project
+        -  `mvn clean package -DskipTests`
+    -  run 3 different instances
+        -  `java -jar target/spring-rsocket-0.0.1-SNAPSHOT.jar --spring.rsocket.server.port=6563`
+        -  `java -jar target/spring-rsocket-0.0.1-SNAPSHOT.jar --spring.rsocket.server.port=6564`
+        -  `java -jar target/spring-rsocket-0.0.1-SNAPSHOT.jar --spring.rsocket.server.port=6565`
+2.  My approach
+    -  use Intellij - Environment variables **OR** VM Options
+    -  create configs
+        -  Edit Configurations
+            -  spring-rsocket-6563
+                -  Environment variables: `spring.rsocket.server.port=6563`
+            -  spring-rsocket-6564
+                -  VM Options: `-Dspring.rsocket.server.port=6564`
+            -  spring-rsocket-6565
+                -  do nothing - just use default (6565 from application.yml)
+            

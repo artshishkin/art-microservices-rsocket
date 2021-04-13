@@ -3,6 +3,7 @@ package net.shyshkin.study.rsocket.springrsocket;
 import io.rsocket.loadbalance.LoadbalanceStrategy;
 import io.rsocket.loadbalance.LoadbalanceTarget;
 import io.rsocket.loadbalance.RoundRobinLoadbalanceStrategy;
+import io.rsocket.loadbalance.WeightedLoadbalanceStrategy;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -67,6 +68,20 @@ public class Lec11ClientSideLoadBalancingTest {
         }
 
         //then
+    }
+
+    @Test
+    void clientSideTest1Client_weighted() throws InterruptedException {
+        //given
+        RSocketRequester requester1 = builder
+                .transports(targetPublisher, WeightedLoadbalanceStrategy.create());
+
+        //when
+        for (int i = 0; i < 5000; i++) {
+            log.debug("sending {}", i);
+            requester1.route("math.service.print").data(i).send().subscribe();
+            Thread.sleep(100);
+        }
     }
 }
 

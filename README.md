@@ -27,3 +27,16 @@ Problems
 -  Start Test
 -  During 15s pause restart server - simulating server update/restart
 -  Will receive `java.nio.channels.ClosedChannelException`
+
+####  Section 4: RSocket With Spring
+
+####  Section 5: Game - Guess A Number - Assignment
+      
+####  Section 6: RSocket - Connection Setup / Retry / Resumption
+
+#####  62. Session Resumption - Part 3
+
+Retry works only for new requests. For broken streams it does not work.
+
+
+

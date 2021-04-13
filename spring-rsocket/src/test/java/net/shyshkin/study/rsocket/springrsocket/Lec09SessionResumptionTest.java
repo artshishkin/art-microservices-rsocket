@@ -14,6 +14,9 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Slf4j
 @SpringBootTest
@@ -33,12 +36,13 @@ public class Lec09SessionResumptionTest {
     RSocketMessageHandler handler;
 
     @Test
-    void retryTest() throws InterruptedException {
+    void retryTest() {
         //given
         int input = 3;
         String route = "math.service.table";
         RSocketRequester requester = builder
-                .tcp("localhost", 6565);
+                .rsocketConnector(c -> c.reconnect(retryStrategy()))
+                .tcp("localhost", 6566);
 
         //when
         Flux<ComputationResponseDto> flux = requester.route(route)
@@ -50,6 +54,12 @@ public class Lec09SessionResumptionTest {
         StepVerifier.create(flux)
                 .expectNextCount(1000)
                 .verifyComplete();
+    }
+
+    private Retry retryStrategy() {
+        return Retry
+                .fixedDelay(100, Duration.ofSeconds(1))
+                .doBeforeRetry(r -> log.debug("Retrying connection: reties in a row {}, total {}", r.totalRetriesInARow(), r.totalRetries()));
     }
 }
 

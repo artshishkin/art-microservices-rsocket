@@ -14,6 +14,9 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+import reactor.util.retry.Retry;
+
+import java.time.Duration;
 
 @Slf4j
 @SpringBootTest
@@ -36,6 +39,9 @@ public class Lec08ConnectionRetryTest {
     void retryTest() throws InterruptedException {
         //given
         RSocketRequester requester = builder
+                .rsocketConnector(connector -> connector.reconnect(
+                        Retry.fixedDelay(10, Duration.ofSeconds(1))
+                                .doBeforeRetry(retrySignal -> log.debug("retrying {}", retrySignal.totalRetriesInARow()))))
                 .tcp("localhost", 6565);
 
         //when

@@ -31,7 +31,7 @@ public class MathService {
     //request-stream
     public Flux<ComputationResponseDto> tableStream(ComputationRequestDto requestDto) {
         int input = requestDto.getInput();
-        return Flux.range(1, 1000)
+        return Flux.range(1, 10)
                 .delayElements(Duration.ofSeconds(1))
                 .map(i -> new ComputationResponseDto(input, i * input));
     }

@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.security.test.context.support.WithMockUser;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -19,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest
+@WithMockUser
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class Lec06ConnectionSetupTest {
 
@@ -39,6 +41,7 @@ public class Lec06ConnectionSetupTest {
         }
 
         @RepeatedTest(3)
+        @WithMockUser
         @DisplayName("Despite we run test 3 times `Connection Setup` happens only once")
         void connectionTest() {
             //given

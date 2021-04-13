@@ -8,7 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 import reactor.netty.tcp.TcpClient;
 import reactor.test.StepVerifier;
@@ -20,14 +22,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @SpringBootTest
 @ActiveProfiles("ssl_enabled")
+@WithMockUser
+@TestPropertySource(properties = {
+        "spring.rsocket.server.port=6262"
+})
 public class Lec12SslTest {
 
     @Autowired
     RSocketRequester.Builder builder;
 
     static {
-        System.setProperty("javax.net.ssl.trustStore","C:\\Users\\Admin\\IdeaProjects\\Study\\VinothSelvaraj\\art-microservices-rsocket\\ssl-tls\\client.truststore");
-        System.setProperty("javax.net.ssl.trustStorePassword","password");
+        System.setProperty("javax.net.ssl.trustStore", "C:\\Users\\Admin\\IdeaProjects\\Study\\VinothSelvaraj\\art-microservices-rsocket\\ssl-tls\\client.truststore");
+        System.setProperty("javax.net.ssl.trustStorePassword", "password");
     }
 
     @Test
@@ -35,7 +41,7 @@ public class Lec12SslTest {
         //given
         int input = 3;
         RSocketRequester requester = builder
-                .tcp("localhost", 6565);
+                .tcp("localhost", 6262);
 
         //when
         Mono<ComputationResponseDto> mono = requester
@@ -57,7 +63,7 @@ public class Lec12SslTest {
         int input = 3;
         RSocketRequester requester = builder
                 .transport(TcpClientTransport.create(
-                        TcpClient.create().host("localhost").port(6565).secure()
+                        TcpClient.create().host("localhost").port(6262).secure()
                 ));
 
         //when

@@ -7,12 +7,22 @@ spring:
   rsocket:
     server:
       port: 6565
+app:
+  notification:
+    route: batch.job.response
+
+---
+spring:
+  config:
+    activate:
+      on-profile: ssl_enabled
+  rsocket:
+    server:
       ssl:
         enabled: true
         key-store-type: PKCS12
         key-store: C:\Users\Admin\IdeaProjects\Study\VinothSelvaraj\art-microservices-rsocket\ssl-tls\rsocket-server.p12
         key-store-password: password
         key-alias: rsocket
-app:
-  notification:
-    route: batch.job.response
+
+

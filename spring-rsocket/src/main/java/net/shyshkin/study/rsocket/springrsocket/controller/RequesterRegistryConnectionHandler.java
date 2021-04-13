@@ -15,11 +15,11 @@ public class RequesterRegistryConnectionHandler {
 
     private final MathClientManager mathClientManager;
 
-    @ConnectMapping
-    public Mono<Void> noEventConnection(RSocketRequester requester) {
-        log.debug("No event connection Setup for {}", requester);
-        return Mono.empty();
-    }
+//    @ConnectMapping
+//    public Mono<Void> noEventConnection(RSocketRequester requester) {
+//        log.debug("No event connection Setup for {}", requester);
+//        return Mono.empty();
+//    }
 
     @ConnectMapping("math.events.connection")
     public Mono<Void> mathEventConnection(RSocketRequester requester) {

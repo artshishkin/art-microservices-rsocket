@@ -60,3 +60,38 @@ Retry works only for new requests. For broken streams it does not work.
             -  spring-rsocket-6565
                 -  do nothing - just use default (6565 from application.yml)
             
+####  Section 8: RSocket Security
+
+#####  77. SSL/TLS - Generating Certificates
+
+1.  Generate Key Pair
+    -  `keytool -genkeypair -alias rsocket -keyalg RSA -keysize 2048 -storetype PKCS12 -validity 3650 -keystore rsocket-server.p12 -storepass password`
+        -  `genkeypair` - generate public and private keys
+        -  `keyalg` - algorithm RSA
+        -  `storetype` - PKCS12 - Public-Key Cryptography Standards (earlier we used JKS (Java KeyStore))
+        -  `validity` - 3650 - 10 years
+        -  `keystore` - rsocket-server.p12 (store file)
+        -  `storepass` - password
+    -  First name and Last name - no matters
+    -  Organizational Unit - `localhost`
+    -  Other - no matter
+    -  yes at the end
+        -  created `rsocket-server.p12`
+2.  Export Public Key
+    -  `keytool -exportcert -alias rsocket -keystore rsocket-server.p12 -storepass password -file cert.pem`
+    -  `file` - cert.pem - save exported key into this file
+        -  created `cert.pem`
+3.  Import certificate into client.truststore
+    -  `keytool -importcert -alias rsocket -keystore client.truststore -storepass password -file cert.pem`
+    -  Trust this certificate? [no]:  yes
+    -  Certificate was added to keystore
+        -  created `client.truststore`
+        
+        
+        
+        
+        
+        
+        
+        
+              

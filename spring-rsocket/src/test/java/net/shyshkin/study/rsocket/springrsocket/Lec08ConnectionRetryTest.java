@@ -60,5 +60,33 @@ public class Lec08ConnectionRetryTest {
             Thread.sleep(2000);
         }
     }
+
+    @Test
+    @DisplayName("Retry register client test - Manually Start Server and Nginx, play with Start/Stop Nginx")
+    void retryTest_forClientManager() throws InterruptedException {
+        //given
+        RSocketRequester requester = builder
+                .setupRoute("math.events.connection")
+                .rsocketConnector(connector -> connector.reconnect(
+                        Retry.fixedDelay(10, Duration.ofSeconds(1))
+                                .doBeforeRetry(retrySignal -> log.debug("retrying {}", retrySignal.totalRetriesInARow()))))
+                .tcp("localhost", 6566);
+
+        //when
+        for (int i = 0; i < 50; i++) {
+            Mono<ComputationResponseDto> mono = requester
+                    .route("math.service.find_square")
+                    .data(new ComputationRequestDto(i))
+                    .retrieveMono(ComputationResponseDto.class)
+                    .doOnNext(dto -> log.debug("response: {}", dto));
+
+            //then
+            StepVerifier.create(mono)
+                    .expectNextCount(1)
+                    .verifyComplete();
+            log.debug("sleep");
+            Thread.sleep(2000);
+        }
+    }
 }
 

@@ -22,10 +22,13 @@ public class MathClientManager {
     public void add(RSocketRequester requester) {
         requester.rsocket()
                 .onClose()
-                .doFirst(() -> clients.add(requester))
+                .doFirst(() -> {
+                    clients.add(requester);
+                    log.debug("client CONNECTED {}", requester);
+                })
                 .doFinally(s -> {
-                    log.debug("finally");
                     clients.remove(requester);
+                    log.debug("client disconnected {}", requester);
                 })
                 .subscribe();
     }
@@ -33,7 +36,7 @@ public class MathClientManager {
     @Value("${app.notification.route}")
     private String notificationRoute;
 
-//    @Scheduled(fixedRate = 1500)
+    //    @Scheduled(fixedRate = 1500)
     public void notificationSimulation() {
         if (StringUtils.hasText(notificationRoute)) {
             int i = ThreadLocalRandom.current().nextInt(1, 100);

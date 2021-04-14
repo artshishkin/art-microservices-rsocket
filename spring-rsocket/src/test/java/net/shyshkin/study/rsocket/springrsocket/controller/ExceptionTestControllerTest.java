@@ -8,7 +8,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -28,7 +28,7 @@ class ExceptionTestControllerTest {
     }
 
     @Nested
-    @WithMockUser
+    @WithUserDetails("client01")
     class ExceptionHandling {
 
         @Test

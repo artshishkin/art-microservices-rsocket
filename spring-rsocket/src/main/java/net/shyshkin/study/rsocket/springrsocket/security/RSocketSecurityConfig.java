@@ -4,11 +4,13 @@ import org.springframework.boot.rsocket.messaging.RSocketStrategiesCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.rsocket.EnableRSocketSecurity;
 import org.springframework.security.config.annotation.rsocket.RSocketSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.messaging.handler.invocation.reactive.AuthenticationPrincipalArgumentResolver;
 import org.springframework.security.rsocket.core.PayloadSocketAcceptorInterceptor;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 
@@ -23,12 +25,17 @@ public class RSocketSecurityConfig {
 
     @Bean
     public RSocketStrategiesCustomizer strategiesCustomizer() {
-        return new RSocketStrategiesCustomizer() {
-            @Override
-            public void customize(RSocketStrategies.Builder strategies) {
-                strategies.encoder(new SimpleAuthenticationEncoder());
-            }
-        };
+        return strategies -> strategies.encoder(new SimpleAuthenticationEncoder());
+    }
+
+    @Bean
+    public RSocketMessageHandler messageHandler(RSocketStrategies strategies) {
+        RSocketMessageHandler messageHandler = new RSocketMessageHandler();
+        messageHandler.setRSocketStrategies(strategies);
+        messageHandler
+                .getArgumentResolverConfigurer()
+                .addCustomResolver(new AuthenticationPrincipalArgumentResolver());
+        return messageHandler;
     }
 
     @Bean

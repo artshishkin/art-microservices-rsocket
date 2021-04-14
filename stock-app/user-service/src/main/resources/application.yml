@@ -1,0 +1,7 @@
+spring:
+  rsocket:
+    server:
+      port: 6563
+logging:
+  level:
+    net.shyshkin: debug

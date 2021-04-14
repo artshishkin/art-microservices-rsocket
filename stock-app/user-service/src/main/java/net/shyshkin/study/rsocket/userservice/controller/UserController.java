@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @MessageMapping("delete.{id}")
-    public Mono<Void> deleteById(String id) {
+    public Mono<Void> deleteById(@DestinationVariable String id) {
         return userService.deleteById(id);
     }
 }

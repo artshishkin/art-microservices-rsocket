@@ -1,10 +1,12 @@
 package net.shyshkin.study.rsocket.springrsocket;
 
+import io.rsocket.exceptions.ApplicationErrorException;
 import io.rsocket.exceptions.RejectedSetupException;
 import io.rsocket.metadata.WellKnownMimeType;
 import lombok.extern.slf4j.Slf4j;
 import net.shyshkin.study.rsocket.springrsocket.dto.ComputationRequestDto;
 import net.shyshkin.study.rsocket.springrsocket.dto.ComputationResponseDto;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -24,11 +26,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class Lec13SecurityTest {
 
+    public static final MimeType MIME_TYPE = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
+
     @Autowired
     RSocketRequester.Builder builder;
 
     @Test
     @WithUserDetails("client01")
+    @Disabled("We have different roles for setup and request")
     void requestResponse_withUserDetailsTest() {
         //given
         int input = 12;
@@ -53,16 +58,17 @@ class Lec13SecurityTest {
     void requestResponse_withMetadataAuthentication() {
         //given
         int input = 12;
-        UsernamePasswordMetadata metadata = new UsernamePasswordMetadata("client01", "pass04c");
-        MimeType mimeType = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
+        UsernamePasswordMetadata metadataSetup = new UsernamePasswordMetadata("client01", "pass04c");
+        UsernamePasswordMetadata metadataRequest = new UsernamePasswordMetadata("user01", "pass01u");
 
         //when
         RSocketRequester requester = builder
-                .setupMetadata(metadata, mimeType)
+                .setupMetadata(metadataSetup, MIME_TYPE)
                 .tcp("localhost", 6565);
 
 
         Mono<ComputationResponseDto> mono = requester.route("math.service.secured.square")
+                .metadata(metadataRequest, MIME_TYPE)
                 .data(new ComputationRequestDto(input))
                 .retrieveMono(ComputationResponseDto.class)
                 .doOnNext(dto -> log.debug("{}", dto));
@@ -84,15 +90,14 @@ class Lec13SecurityTest {
             "admin01,wrong_pass,Invalid Credentials",
             "foo,buzz,Invalid Credentials"
     })
-    void requestResponse_invalid(String username, String password, String expectedErrorMessage) {
+    void requestResponse_invalidSetup(String username, String password, String expectedErrorMessage) {
         //given
         int input = 12;
         UsernamePasswordMetadata metadata = new UsernamePasswordMetadata(username, password);
-        MimeType mimeType = MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString());
 
         //when
         RSocketRequester requester = builder
-                .setupMetadata(metadata, mimeType)
+                .setupMetadata(metadata, MIME_TYPE)
                 .tcp("localhost", 6565);
 
         Mono<ComputationResponseDto> mono = requester.route("math.service.secured.square")
@@ -104,6 +109,38 @@ class Lec13SecurityTest {
         StepVerifier.create(mono)
                 .verifyErrorSatisfies(ex -> assertThat(ex)
                         .isInstanceOf(RejectedSetupException.class)
+                        .hasMessage(expectedErrorMessage));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "admin01,pass03a,Access Denied",
+            "client01,pass04c,Access Denied",
+            "client01,wrong_pass,Invalid Credentials",
+            "admin01,wrong_pass,Invalid Credentials",
+            "foo,buzz,Invalid Credentials"
+    })
+    void requestResponse_invalidRequest(String username, String password, String expectedErrorMessage) {
+        //given
+        int input = 12;
+        UsernamePasswordMetadata metadataSetup = new UsernamePasswordMetadata("client01", "pass04c");
+        UsernamePasswordMetadata metadataRequest = new UsernamePasswordMetadata(username, password);
+
+        RSocketRequester requester = builder
+                .setupMetadata(metadataSetup, MIME_TYPE)
+                .tcp("localhost", 6565);
+
+        //when
+        Mono<ComputationResponseDto> mono = requester.route("math.service.secured.square")
+                .metadata(metadataRequest, MIME_TYPE)
+                .data(new ComputationRequestDto(input))
+                .retrieveMono(ComputationResponseDto.class)
+                .doOnNext(dto -> log.debug("{}", dto));
+
+        //then
+        StepVerifier.create(mono)
+                .verifyErrorSatisfies(ex -> assertThat(ex)
+                        .isInstanceOf(ApplicationErrorException.class)
                         .hasMessage(expectedErrorMessage));
     }
 }

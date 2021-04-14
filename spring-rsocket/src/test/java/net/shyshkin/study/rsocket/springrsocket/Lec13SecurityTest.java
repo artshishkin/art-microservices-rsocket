@@ -124,8 +124,8 @@ class Lec13SecurityTest {
 
         @ParameterizedTest
         @CsvSource({
-                "admin01,pass03a,Access Denied",
-                "client01,pass04c,Access Denied",
+                "admin01,pass03a,Denied",
+                "client01,pass04c,Denied",
                 "client01,wrong_pass,Invalid Credentials",
                 "admin01,wrong_pass,Invalid Credentials",
                 "foo,buzz,Invalid Credentials"
@@ -146,7 +146,7 @@ class Lec13SecurityTest {
             StepVerifier.create(mono)
                     .verifyErrorSatisfies(ex -> assertThat(ex)
                             .isInstanceOf(ApplicationErrorException.class)
-                            .hasMessage(expectedErrorMessage));
+                            .hasMessageContaining(expectedErrorMessage));
         }
 
         @Test
@@ -178,9 +178,9 @@ class Lec13SecurityTest {
 
         @ParameterizedTest
         @CsvSource({
-                "user01,pass01u,Access Denied",
-                "user02,pass02u,Access Denied",
-                "client01,pass04c,Access Denied",
+                "user01,pass01u,Denied",
+                "user02,pass02u,Denied",
+                "client01,pass04c,Denied",
                 "client01,wrong_pass,Invalid Credentials",
                 "admin01,wrong_pass,Invalid Credentials",
                 "foo,buzz,Invalid Credentials"
@@ -201,7 +201,7 @@ class Lec13SecurityTest {
             StepVerifier.create(flux)
                     .verifyErrorSatisfies(ex -> assertThat(ex)
                             .isInstanceOf(ApplicationErrorException.class)
-                            .hasMessage(expectedErrorMessage));
+                            .hasMessageContaining(expectedErrorMessage));
         }
     }
 }

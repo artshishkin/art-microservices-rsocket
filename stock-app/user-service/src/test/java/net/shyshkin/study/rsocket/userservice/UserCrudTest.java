@@ -1,6 +1,8 @@
 package net.shyshkin.study.rsocket.userservice;
 
+import io.rsocket.metadata.WellKnownMimeType;
 import lombok.extern.slf4j.Slf4j;
+import net.shyshkin.study.rsocket.userservice.dto.OperationType;
 import net.shyshkin.study.rsocket.userservice.dto.UserDto;
 import net.shyshkin.study.rsocket.userservice.entity.User;
 import net.shyshkin.study.rsocket.userservice.repository.UserRepository;
@@ -8,6 +10,8 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.util.MimeType;
+import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -146,4 +150,23 @@ class UserCrudTest {
         StepVerifier.create(deletedUserMono)
                 .verifyComplete();
     }
+
+    @Test
+    void metadataTest() {
+        //given
+        MimeType mimeType = MimeTypeUtils.parseMimeType(WellKnownMimeType.APPLICATION_CBOR.getString());
+        UserDto newUser = UserDto.builder().balance(777).name("Name777").build();
+
+        //when
+        Mono<Void> mono = requester.route("user.operation.type")
+                .metadata(OperationType.POST, mimeType)
+                .data(newUser)
+                .send();
+
+        //then
+        StepVerifier.create(mono)
+                .verifyComplete();
+    }
 }
+
+

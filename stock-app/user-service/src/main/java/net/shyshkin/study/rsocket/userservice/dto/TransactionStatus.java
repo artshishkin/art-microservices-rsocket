@@ -1,6 +1,6 @@
 package net.shyshkin.study.rsocket.userservice.dto;
 
-public enum TransactionState {
+public enum TransactionStatus {
 
     COMPLETED, FAILED;
 }

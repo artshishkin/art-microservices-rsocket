@@ -49,7 +49,7 @@ public class RSocketSecurityConfig {
                                 .setup().hasAnyRole("TRUSTED_CLIENT")
 //                                .route("math.service.secured.table").hasRole("ADMIN")
 //                                .route("*.*.secured.square").hasRole("USER")
-                                .anyRequest().authenticated()
+                                .anyExchange().authenticated()
                 ).build();
     }
 }

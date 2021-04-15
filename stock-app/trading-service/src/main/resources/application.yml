@@ -7,3 +7,12 @@ spring:
 logging:
   level:
     net.shyshkin: debug
+
+app:
+  clients:
+    user-service:
+      host: localhost
+      port: 6563
+
+
+

@@ -13,6 +13,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -28,11 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
+@ActiveProfiles("my-transactions-service")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource(properties = {
-        "spring.rsocket.server.port=7071"
+@TestPropertySource(properties ={
+        "spring.rsocket.server.port=7070"
 })
-class TransactionsTest {
+class MyTransactionsTest {
 
     RSocketRequester requester;
 
@@ -44,7 +46,7 @@ class TransactionsTest {
 
     @BeforeAll
     void beforeAll() {
-        requester = builder.tcp("localhost", 7071);
+        requester = builder.tcp("localhost", 7070);
     }
 
     @ParameterizedTest

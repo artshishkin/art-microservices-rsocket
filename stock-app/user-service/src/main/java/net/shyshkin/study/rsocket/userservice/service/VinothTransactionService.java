@@ -7,6 +7,7 @@ import net.shyshkin.study.rsocket.userservice.entity.User;
 import net.shyshkin.study.rsocket.userservice.mapper.TransactionMapper;
 import net.shyshkin.study.rsocket.userservice.repository.UserRepository;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -19,6 +20,7 @@ import static net.shyshkin.study.rsocket.userservice.dto.TransactionType.DEBIT;
 @Service
 @Primary
 @RequiredArgsConstructor
+@Profile("!my-transactions-service")
 public class VinothTransactionService implements TransactionService {
 
     private final UserRepository repository;

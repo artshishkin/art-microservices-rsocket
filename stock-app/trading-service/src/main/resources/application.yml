@@ -13,6 +13,9 @@ app:
     user-service:
       host: localhost
       port: 6563
+    stock-service:
+      host: localhost
+      port: 6565
 
 
 

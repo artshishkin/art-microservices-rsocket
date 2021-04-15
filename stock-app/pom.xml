@@ -6,6 +6,7 @@
     <modules>
         <module>stock-service</module>
         <module>user-service</module>
+        <module>trading-service</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

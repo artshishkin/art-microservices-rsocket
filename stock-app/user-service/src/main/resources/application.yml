@@ -2,6 +2,10 @@ spring:
   rsocket:
     server:
       port: 6563
+#      transport: websocket
+#      mapping-path: /user-service
+# ws://localhost:6563/user-service - like that
+# add dependency to webflux - for static content
 logging:
   level:
     net.shyshkin: debug

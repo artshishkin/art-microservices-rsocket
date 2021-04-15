@@ -9,12 +9,15 @@ import reactor.core.publisher.Flux;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class StockClient {
 
     private final RSocketRequester requester;
     private Flux<StockTickDto> hotPublisher;
+    private final Map<String, Integer> lastPriceMap = new HashMap<>();
 
     public StockClient(RSocketRequester.Builder builder,
                        RSocketConnectorConfigurer connectorConfigurer,
@@ -34,8 +37,17 @@ public class StockClient {
     private void initialize() {
         hotPublisher = requester.route("stock.price")
                 .retrieveFlux(StockTickDto.class)
+                .doOnNext(this::saveLastPrice)
                 .retryWhen(Retry.fixedDelay(Long.MAX_VALUE, Duration.ofSeconds(2)))
                 .publish()
                 .autoConnect(0);
+    }
+
+    public int getCurrentStockPrice(String stockCode) {
+        return lastPriceMap.getOrDefault(stockCode, 0);
+    }
+
+    private void saveLastPrice(StockTickDto tick) {
+        lastPriceMap.put(tick.getCode(), tick.getPrice());
     }
 }

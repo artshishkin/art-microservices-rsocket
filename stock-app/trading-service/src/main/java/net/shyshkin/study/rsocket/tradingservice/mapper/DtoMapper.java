@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(imports = {TradeType.class, TransactionType.class})
 public interface DtoMapper {
 
+    @Mapping(target = "quantity", constant = "0")
     UserStock toUserStock(StockTradeRequest request);
 
     @Mapping(target = "type", expression = "java(request.getTradeType() == TradeType.BUY ? TransactionType.DEBIT : TransactionType.CREDIT)")

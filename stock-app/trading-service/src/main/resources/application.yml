@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: trading-service
+  rsocket:
+    server:
+      port: 6564
+logging:
+  level:
+    net.shyshkin: debug

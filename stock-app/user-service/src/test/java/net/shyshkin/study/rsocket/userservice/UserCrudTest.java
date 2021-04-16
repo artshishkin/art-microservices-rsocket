@@ -8,8 +8,10 @@ import net.shyshkin.study.rsocket.userservice.entity.User;
 import net.shyshkin.study.rsocket.userservice.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Flux;
@@ -23,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestPropertySource(properties ={
+        "spring.rsocket.server.port=7071"
+})
 class UserCrudTest {
 
     RSocketRequester requester;
@@ -33,9 +38,13 @@ class UserCrudTest {
     @Autowired
     RSocketRequester.Builder builder;
 
+    @Autowired
+    RSocketProperties rSocketProperties;
+
     @BeforeAll
     void beforeAll() {
-        requester = builder.tcp("localhost", 6563);
+        Integer port = rSocketProperties.getServer().getPort();
+        requester = builder.tcp("localhost", port);
     }
 
     @Order(0)

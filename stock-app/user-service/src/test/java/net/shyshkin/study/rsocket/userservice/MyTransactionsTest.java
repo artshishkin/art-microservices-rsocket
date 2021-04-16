@@ -11,6 +11,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.test.context.ActiveProfiles;
@@ -31,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @ActiveProfiles("my-transactions-service")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@TestPropertySource(properties ={
+@TestPropertySource(properties = {
         "spring.rsocket.server.port=7070"
 })
 class MyTransactionsTest {
@@ -44,9 +45,12 @@ class MyTransactionsTest {
     @Autowired
     RSocketRequester.Builder builder;
 
+    @Autowired
+    RSocketProperties rSocketProperties;
+
     @BeforeAll
     void beforeAll() {
-        requester = builder.tcp("localhost", 7070);
+        requester = builder.tcp("localhost", rSocketProperties.getServer().getPort());
     }
 
     @ParameterizedTest

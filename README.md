@@ -114,7 +114,10 @@ curl --location --request POST 'http://192.168.1.154:8080/stock/trade' \
 }'
 ```
 
+#####  Deploying Stack
 
+-  [play-with-docker](stock-app/deploy-stock-app/stack/play-with-docker.md)
+-  [DigitalOcean Swarm](stock-app/deploy-stock-app/stack/digitalocean-swarm.md)
 
 
 

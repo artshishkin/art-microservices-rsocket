@@ -1,9 +1,6 @@
 spring:
   application:
     name: trading-service
-  rsocket:
-    server:
-      port: 6564
   data:
     mongodb:
       authentication-database: admin

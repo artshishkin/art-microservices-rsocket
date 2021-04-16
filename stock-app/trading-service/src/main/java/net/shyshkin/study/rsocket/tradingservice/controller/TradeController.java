@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @Slf4j
 @RestController
 @RequestMapping("stock")
@@ -23,10 +25,10 @@ public class TradeController {
     private final StockClient stockClient;
 
     @PostMapping("trade")
-    public Mono<ResponseEntity<StockTradeResponse>> trade(@RequestBody Mono<StockTradeRequest> tradeRequestMono) {
+    public Mono<ResponseEntity<StockTradeResponse>> trade(@Valid @RequestBody Mono<StockTradeRequest> tradeRequestMono) {
         return tradeRequestMono
                 .doOnNext(req -> log.debug("{}", req))
-                .filter(req -> req.getQuantity() > 0)
+//                .filter(req -> req.getQuantity() > 0)
                 .flatMap(tradeService::trade)
                 .doOnNext(resp -> log.debug("{}", resp))
                 .map(ResponseEntity::ok)

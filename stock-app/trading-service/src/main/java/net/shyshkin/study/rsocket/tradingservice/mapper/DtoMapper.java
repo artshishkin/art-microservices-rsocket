@@ -16,4 +16,6 @@ public interface DtoMapper {
 
     @Mapping(source = "status", target = "tradeStatus")
     StockTradeResponse toStockTradeResponse(StockTradeRequest request, TradeStatus status, int price);
+
+    UserStockDto toUserStockDto(UserStock userStock);
 }

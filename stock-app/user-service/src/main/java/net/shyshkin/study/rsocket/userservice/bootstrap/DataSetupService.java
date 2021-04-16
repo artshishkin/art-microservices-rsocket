@@ -21,14 +21,14 @@ public class DataSetupService implements CommandLineRunner {
         userRepository
                 .count()
                 .filter(count -> count == 0)
-                .flatMapMany(c -> Flux.range(100, 10))
+                .flatMapMany(c -> Flux.range(1, 10))
                 .map(this::createStubUser)
                 .flatMap(userRepository::save)
                 .doOnNext(u -> log.debug("user saved: {}", u))
                 .subscribe();
     }
 
-    private User createStubUser(int balance) {
-        return User.builder().balance(balance).name("Name" + balance).build();
+    private User createStubUser(int fakeIdx) {
+        return User.builder().balance(10000 + 100 * fakeIdx).name("Name" + fakeIdx).build();
     }
 }

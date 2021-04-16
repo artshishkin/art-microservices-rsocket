@@ -87,6 +87,85 @@ Retry works only for new requests. For broken streams it does not work.
     -  Certificate was added to keystore
         -  created `client.truststore`
         
+####  Section 11: Reactive Microservice With RSocket - Trade Service
+
+#####  136. Lets Trade
+
+1.  List all users        
+    -  `curl 'http://localhost:8080/users'`
+    -  or using host ip        
+    -  `curl 'http://192.168.1.154:8080/users'`        
+2.  Stock tick stream
+    -  `curl --location --request GET 'http://192.168.1.154:8080/stock/tick/stream' --header 'Accept: text/event-stream'`
+    -  `curl -N 'http://192.168.1.154:8080/stock/tick/stream'`
+3.  All user's stocks
+    -  `curl --location --request GET 'http://192.168.1.154:8080/users/60793c0591c655554b5bf6ec/stocks'`    
+    -  `curl 'http://192.168.1.154:8080/users/60793c0591c655554b5bf6ec/stocks'`    
+4.  Trade
+
+```shell script
+curl --location --request POST 'http://192.168.1.154:8080/stock/trade' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "userId":"60793c0591c655554b5bf6ec",
+    "stockCode":"AAPL",
+    "quantity":1,
+    "tradeType":"BUY"
+}'
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         
         
         

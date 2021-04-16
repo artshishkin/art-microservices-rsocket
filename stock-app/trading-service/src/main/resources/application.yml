@@ -4,6 +4,14 @@ spring:
   rsocket:
     server:
       port: 6564
+  data:
+    mongodb:
+      authentication-database: admin
+      database: tradeservice
+      host: localhost
+      port: 27017
+      username: username
+      password: password
 logging:
   level:
     net.shyshkin: debug

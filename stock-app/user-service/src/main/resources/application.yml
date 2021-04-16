@@ -6,6 +6,16 @@ spring:
 #      mapping-path: /user-service
 # ws://localhost:6563/user-service - like that
 # add dependency to webflux - for static content
+
+  data:
+    mongodb:
+      authentication-database: admin
+      database: userservice
+      host: localhost
+      port: 27017
+      username: username
+      password: password
+
 logging:
   level:
     net.shyshkin: debug

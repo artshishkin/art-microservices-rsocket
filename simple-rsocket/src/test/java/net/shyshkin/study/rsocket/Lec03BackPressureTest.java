@@ -48,7 +48,7 @@ class Lec03BackPressureTest {
     @Test
     void backpressure() {
         //given
-        log.debug("Default buffer size: {} can be overrode by `reactor.bufferSize.x` system property",Queues.XS_BUFFER_SIZE );
+        log.debug("Default buffer size: {} can be overrode by `reactor.bufferSize.x` system property", Queues.XS_BUFFER_SIZE);
         Payload payload = DefaultPayload.create("NO Matter");
 
         //when

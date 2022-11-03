@@ -1,0 +1,34 @@
+### rsocket fire and forget
+FNF fire-and-forget
+Host: 127.0.0.1:6565
+Content-Type: application/json
+
+{
+  "input": 13
+}
+
+### rsocket request response through value
+RSOCKET request-response-through-value
+Host: 127.0.0.1:6565
+Content-Type: application/json
+
+14
+
+### rsocket request response through JSON
+RSOCKET request-response-through-json
+Host: tcp://127.0.0.1:6565
+Content-Type: application/json
+
+{
+  "input": 13
+}
+
+#### rsocket request stream
+#### DOES NOT WORK
+#STREAM request-stream
+#Host: 127.0.0.1:6565
+#Content-Type: application/stream+json
+#
+#4
+
+###

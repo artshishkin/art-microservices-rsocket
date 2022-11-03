@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
@@ -63,4 +64,31 @@ class Lec01RSocketManualTest {
                 )
                 .verifyComplete();
     }
+
+    @Test
+    void requestStream() {
+        //given
+        int input = 8;
+        Payload payload = ObjectUtil.toPayload(RequestDto.builder().input(input).build());
+
+        //when
+        Flux<Payload> requestResponse = rSocket.requestStream(payload);
+
+        //then
+        Flux<ResponseDto> dtoFlux = requestResponse
+                .map(p -> ObjectUtil.toObject(p, ResponseDto.class))
+                .doOnNext(System.out::println);
+
+        StepVerifier.create(dtoFlux)
+                .assertNext(dto ->
+                        assertEquals(input * 1, dto.getOutput())
+                )
+                .assertNext(dto ->
+                        assertEquals(input * 2, dto.getOutput())
+                )
+                .expectNextCount(7)
+                .expectNext(ResponseDto.builder().input(input).output(10 * input).build())
+                .verifyComplete();
+    }
+
 }

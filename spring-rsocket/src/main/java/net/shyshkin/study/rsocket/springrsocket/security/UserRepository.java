@@ -1,6 +1,7 @@
 package net.shyshkin.study.rsocket.springrsocket.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.util.Map;
 
+@Profile("secure")
 @Repository
 @RequiredArgsConstructor
 public class UserRepository {

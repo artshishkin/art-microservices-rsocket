@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.ActiveProfiles;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -15,6 +16,7 @@ import reactor.test.StepVerifier;
 @Slf4j
 @SpringBootTest
 @WithUserDetails("client01")
+@ActiveProfiles("secure")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class GameTest {
 

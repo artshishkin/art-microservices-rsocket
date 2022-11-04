@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @SpringBootTest
-@ActiveProfiles("ssl_enabled")
+@ActiveProfiles({"ssl_enabled", "secure"})
 @WithUserDetails("client01")
 @TestPropertySource(properties = {
         "spring.rsocket.server.port=6262"

@@ -22,13 +22,13 @@ import java.time.Duration;
 @Slf4j
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Manually start Server (SpringRsocketApplication) and Nginx then run test, during test stop Nginx and start it again")
+@DisplayName("Lec09SessionResumptionManualTest - Manually start Server (SpringRsocketApplication) and Nginx then run test, during test stop Nginx and start it again")
 @Disabled("Only for manual testing")
 //@TestPropertySource(properties = {"spring.rsocket.server.port=6564"})
 @TestPropertySource(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration"
 })
-public class Lec09SessionResumptionTest {
+public class Lec09SessionResumptionManualTest {
 
     @Autowired
     RSocketRequester.Builder builder;

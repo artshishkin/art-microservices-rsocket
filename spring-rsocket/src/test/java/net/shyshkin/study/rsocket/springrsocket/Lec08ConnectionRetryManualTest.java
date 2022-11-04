@@ -21,13 +21,13 @@ import java.time.Duration;
 @Slf4j
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Manually start Server - SpringRsocketApplication then run test")
+@DisplayName("Lec08ConnectionRetryManualTest - Manually start Server - SpringRsocketApplication then run test")
 @Disabled("Only for manual testing")
 //@TestPropertySource(properties = {"spring.rsocket.server.port=6564"})
 @TestPropertySource(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration"
 })
-public class Lec08ConnectionRetryTest {
+public class Lec08ConnectionRetryManualTest {
 
     @Autowired
     RSocketRequester.Builder builder;

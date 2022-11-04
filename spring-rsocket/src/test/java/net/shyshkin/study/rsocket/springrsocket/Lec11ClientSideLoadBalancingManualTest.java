@@ -20,12 +20,12 @@ import java.util.List;
 @Slf4j
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("Manually start 3 instances of a Server (ports 6563,6564,6565) then run test")
+@DisplayName("Lec11ClientSideLoadBalancingManualTest - Manually start 3 instances of a Server (ports 6563,6564,6565) then run test")
 @Disabled("Only for manual testing")
 @TestPropertySource(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration"
 })
-public class Lec11ClientSideLoadBalancingTest {
+public class Lec11ClientSideLoadBalancingManualTest {
 
     @Autowired
     RSocketRequester.Builder builder;
